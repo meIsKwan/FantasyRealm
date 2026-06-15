@@ -20,5 +20,11 @@ void ATopDownPlayerController::SetupInputComponent()
 	}
 	
 	// EnhancedInput system
-	UEnhancedInputLocalPlayerSubsystem* Subsystem
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	
+	if (Subsystem)
+	{
+		Subsystem->AddMappingContext(DefaultInputMappingContext, 0);
+		UE_LOG(LogTemp, Display, TEXT("Input mapping context added."))
+	}
 }

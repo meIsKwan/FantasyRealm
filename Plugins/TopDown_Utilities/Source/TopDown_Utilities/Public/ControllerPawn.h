@@ -9,6 +9,9 @@
 class UCapsuleComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UInputAction;
+struct FInputActionValue;
+class UFloatingPawnMovement;
 
 UCLASS()
 class TOPDOWN_UTILITIES_API AControllerPawn : public APawn
@@ -21,13 +24,14 @@ public:
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
+	void Move(const FInputActionValue& Value);
 private:
 	// Capsule Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Collision", meta = (AllowPrivateAccess = "true"))
@@ -38,4 +42,10 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArm_CP;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* MoveAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
+	UFloatingPawnMovement* FloatingComponent;
 };
