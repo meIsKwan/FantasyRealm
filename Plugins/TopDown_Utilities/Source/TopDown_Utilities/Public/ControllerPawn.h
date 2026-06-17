@@ -31,7 +31,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
+	// Move Pawn Camera
 	void Move(const FInputActionValue& Value);
+	
+	// Zoom Pawn Camera
+	void Zoom(const FInputActionValue& Value);
+	
 private:
 	// Capsule Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Collision", meta = (AllowPrivateAccess = "true"))
@@ -45,6 +50,18 @@ private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ZoomAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
+	float CameraZoomSpeed = 10.f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
+	float MinCameraOrthoWidth = 300.f;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
+	float MaxCameraOrthoWidth = 2300.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
 	UFloatingPawnMovement* FloatingComponent;

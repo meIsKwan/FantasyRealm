@@ -32,7 +32,7 @@ AControllerPawn::AControllerPawn()
 	
 	// Create Floating Pawn Component
 	FloatingComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Floating Pawn Component"));
-	// FloatingComponent->UpdatedComponent = Capsule_CP;
+
 }
 
 // Called when the game starts or when spawned
@@ -55,8 +55,25 @@ void AControllerPawn::Move(const FInputActionValue& Value)
 
 	if (Controller)
 	{
-		AddMovementInput(GetActorRightVector(), MovementInput.X);
-		AddMovementInput(GetActorForwardVector(), MovementInput.Y);
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		
+		const FVector Forward = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector Right = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		
+		AddMovementInput(Forward, MovementInput.Y);
+		AddMovementInput(Right, MovementInput.X);
+	}
+}
+
+void AControllerPawn::Zoom(const FInputActionValue& Value)
+{
+	const float ZoomDirection = Value.Get<float>();
+	if (Controller != nullptr)
+	{
+		float DesireOrthoWidth = Camera_CP->OrthoWidth + ZoomDirection*CameraZoomSpeed;
+		DesireOrthoWidth = FMath::Clamp(DesireOrthoWidth, MinCameraOrthoWidth, MaxCameraOrthoWidth);
+		Camera_CP->SetOrthoWidth(DesireOrthoWidth);
 	}
 }
 
@@ -67,6 +84,9 @@ void AControllerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		// Bind Movement
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AControllerPawn::Move);
+		// Bind Zoom
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AControllerPawn::Zoom);
 	}
 }
