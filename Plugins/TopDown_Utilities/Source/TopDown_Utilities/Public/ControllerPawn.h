@@ -42,9 +42,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Collision", meta = (AllowPrivateAccess = "true"))
 	UCapsuleComponent* Capsule_CP;
 	
+	// Camera Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* Camera_CP;
 	
+	// Spring Arm Component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Camera", meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* SpringArm_CP;
 	
