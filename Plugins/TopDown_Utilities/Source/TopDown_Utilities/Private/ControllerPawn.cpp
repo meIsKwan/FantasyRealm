@@ -23,12 +23,15 @@ AControllerPawn::AControllerPawn()
 	// Create SpringArm Component in Blueprint
 	SpringArm_CP = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm_CP"));
 	SpringArm_CP->SetupAttachment(RootComponent);
+	SpringArm_CP->bEnableCameraLag = true;
+	SpringArm_CP->CameraLagSpeed = 6.f;
 	SpringArm_CP->TargetArmLength = 1500.f;
 	
 	// Create Camera Component in Blueprint
 	Camera_CP = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera_CP"));
 	Camera_CP->SetupAttachment(SpringArm_CP, USpringArmComponent::SocketName);
 	Camera_CP->SetProjectionMode(ECameraProjectionMode::Type::Orthographic);
+	Camera_CP->SetAutoCalculateOrthoPlanes(false);
 	
 	// Create Floating Pawn Component
 	FloatingComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Floating Pawn Component"));
