@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "CLM_BaseActor.h"
 
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "SelectableInterface.h"
+#include "NavigableInterface.h"
 #include "Components/SceneComponent.h"
-#include "CLM_BaseActor.h"
 
 // Sets default values
 ACLM_BaseActor::ACLM_BaseActor()

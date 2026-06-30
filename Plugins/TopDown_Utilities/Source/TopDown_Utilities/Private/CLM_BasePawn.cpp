@@ -5,6 +5,7 @@
 
 #include "AnimationEditorTypes.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 
@@ -36,10 +37,40 @@ void ACLM_BasePawn::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ACLM_BasePawn::Move()
+{
+	if (!bMoving)
+	{
+		return;
+	}
+	
+	FVector MoveDirection = (MoveTargetLocation - GetActorLocation());
+	
+	if (MoveDirection.Length() < AcceptanceDistance)
+	{
+		bMoving = false;
+		return;
+	}
+	
+	MoveDirection.Normalize(1);
+	AddMovementInput(MoveDirection, 1.f);
+	
+	FRotator DesiredRotation = UKismetMathLibrary::MakeRotFromX(MoveDirection);
+	DesiredRotation.Pitch = 0;
+	DesiredRotation.Roll = 0;
+	
+	FRotator NewRotation = FMath::RInterpTo(GetActorRotation(), DesiredRotation, GetWorld()->GetDeltaSeconds(), CharacterTurnSpeed);
+	
+	SetActorRotation(NewRotation);
+}
+
 // Called every frame
 void ACLM_BasePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	Move();
+	
 }
 
 // Called to bind functionality to input
@@ -56,5 +87,12 @@ void ACLM_BasePawn::SelectActorLocal(const bool Select)
 void ACLM_BasePawn::SelectActor_Implementation(const bool Select)
 {
 	SelectedIndicator->SetHiddenInGame(!Select);
+}
+
+void ACLM_BasePawn::MoveToLocation_Implementation(const FVector TargetLocation)
+{
+	UE_LOG(LogTemp, Display, TEXT("Di chuyển"));
+	MoveTargetLocation = TargetLocation + FVector(0, 0, GetDefaultHalfHeight());
+	bMoving = true;
 }
 

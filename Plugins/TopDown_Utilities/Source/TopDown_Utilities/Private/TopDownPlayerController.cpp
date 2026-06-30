@@ -7,6 +7,8 @@
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "SelectableInterface.h"
+#include "NavigableInterface.h"
 
 ATopDownPlayerController::ATopDownPlayerController()
 {
@@ -33,6 +35,7 @@ void ATopDownPlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::Select);
+		EnhancedInputComponent->BindAction(CommandAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::CommandSelectedActor);
 	}
 }
 
@@ -59,6 +62,21 @@ void ATopDownPlayerController::Select(const FInputActionValue& Value)
 		if (SelectedActor->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
 		{
 			ISelectableInterface::Execute_SelectActor(SelectedActor, true);
+		}
+	}
+}
+
+void ATopDownPlayerController::CommandSelectedActor(const FInputActionValue& Value)
+{
+	if (SelectedActor)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Chúc mừng bạn"));
+		FHitResult HitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
+		
+		if (HitResult.bBlockingHit)
+		{
+			INavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
 		}
 	}
 }

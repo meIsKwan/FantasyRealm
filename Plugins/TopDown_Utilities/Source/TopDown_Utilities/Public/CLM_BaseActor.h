@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "NavigableInterface.h"
 #include "SelectableInterface.h"
 #include "GameFramework/Actor.h"
 #include "CLM_BaseActor.generated.h"
@@ -25,8 +26,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	// Override the function SelectActor
-	void SelectActor_Implementation(const bool Select) override;
-	
+	virtual void SelectActor_Implementation(const bool Select) override;
 	
 protected:
 	// Called when the game starts or when spawned

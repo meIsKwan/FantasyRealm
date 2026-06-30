@@ -27,11 +27,16 @@ protected:
 	virtual void SetupInputComponent() override;
 	
 	void Select(const FInputActionValue& Value);
+
+	void CommandSelectedActor(const FInputActionValue& Value);
 	
 private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SelectAction;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CommandAction;
 	
 	UPROPERTY()
 	AActor* SelectedActor;
