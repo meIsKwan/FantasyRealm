@@ -3,11 +3,13 @@
 
 #include "CLM_BasePawn.h"
 
+#include "AIController.h"
 #include "AnimationEditorTypes.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "AIModule.h"
 
 // Sets default values
 ACLM_BasePawn::ACLM_BasePawn()
@@ -18,6 +20,7 @@ ACLM_BasePawn::ACLM_BasePawn()
 	// Create Capsule
 	CapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Capsule"));
 	CapsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	CapsuleComponent->SetCanEverAffectNavigation(false);
 	RootComponent = CapsuleComponent;
 	// Create SkeltalMeshComponent
 	SkeletalMeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
@@ -37,7 +40,7 @@ void ACLM_BasePawn::BeginPlay()
 	Super::BeginPlay();
 }
 
-void ACLM_BasePawn::Move()
+void ACLM_BasePawn::OrientPawnToMovementDirection()
 {
 	if (!bMoving)
 	{
@@ -53,7 +56,7 @@ void ACLM_BasePawn::Move()
 	}
 	
 	MoveDirection.Normalize(1);
-	AddMovementInput(MoveDirection, 1.f);
+	// AddMovementInput(MoveDirection, 1.f);
 	
 	FRotator DesiredRotation = UKismetMathLibrary::MakeRotFromX(MoveDirection);
 	DesiredRotation.Pitch = 0;
@@ -69,7 +72,7 @@ void ACLM_BasePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	Move();
+	OrientPawnToMovementDirection();
 	
 }
 
@@ -94,5 +97,8 @@ void ACLM_BasePawn::MoveToLocation_Implementation(const FVector TargetLocation)
 	UE_LOG(LogTemp, Display, TEXT("Di chuyển"));
 	MoveTargetLocation = TargetLocation + FVector(0, 0, GetDefaultHalfHeight());
 	bMoving = true;
+	
+	AAIController* PawnAIController = Cast<AAIController>(GetController());
+	PawnAIController->MoveToLocation(TargetLocation, AcceptanceDistance);
 }
 

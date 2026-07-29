@@ -40,7 +40,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	
-	void Move();
+	void OrientPawnToMovementDirection();
 	
 	FVector MoveTargetLocation = FVector::ZeroVector;
 	bool bMoving = false;
