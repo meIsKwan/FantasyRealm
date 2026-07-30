@@ -9,10 +9,18 @@
 #include "EnhancedInputComponent.h"
 #include "SelectableInterface.h"
 #include "NavigableInterface.h"
+#include "TopDownHUD.h"
 
 ATopDownPlayerController::ATopDownPlayerController()
 {
 	bShowMouseCursor = true;
+}
+
+void ATopDownPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	TopDownHUD = Cast<ATopDownHUD>(GetHUD());
 }
 
 void ATopDownPlayerController::SetupInputComponent()
@@ -34,7 +42,14 @@ void ATopDownPlayerController::SetupInputComponent()
 	}
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
+		// Bind Select function to Select input action
 		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::Select);
+
+		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Started, this, &ATopDownPlayerController::SelectStart);
+		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Triggered, this, &ATopDownPlayerController::SelectOnGoing);
+		EnhancedInputComponent->BindAction(SelectAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::SelectEnd);
+		
+		// Bind Command actioon to CommandSelectedActor
 		EnhancedInputComponent->BindAction(CommandAction, ETriggerEvent::Completed, this, &ATopDownPlayerController::CommandSelectedActor);
 	}
 }
@@ -74,9 +89,39 @@ void ATopDownPlayerController::CommandSelectedActor(const FInputActionValue& Val
 		FHitResult HitResult;
 		GetHitResultUnderCursor(ECollisionChannel::ECC_Camera, false, HitResult);
 		
-		if (HitResult.bBlockingHit)
+		if (HitResult.bBlockingHit && SelectedActor->GetClass()->ImplementsInterface(UNavigableInterface::StaticClass()))
 		{
 			INavigableInterface::Execute_MoveToLocation(SelectedActor, HitResult.Location);
 		}
+	}
+}
+
+void ATopDownPlayerController::SelectStart(const FInputActionValue& Value)
+{
+	float MouseX, MouseY;
+	GetMousePosition(MouseX, MouseY);
+	SelectionStartPosition = FVector2D(MouseX, MouseY);
+	UE_LOG(LogTemp, Display, TEXT("Selection started"));
+}
+
+void ATopDownPlayerController::SelectOnGoing(const FInputActionValue& Value)
+{
+	float MouseX, MouseY;
+	GetMousePosition(MouseX, MouseY);
+	SelectionSize = FVector2D(MouseX - SelectionStartPosition.X, MouseY - SelectionStartPosition.Y);
+	UE_LOG(LogTemp, Display, TEXT("Selection ongoing"));
+	
+	if (true)
+	{
+		TopDownHUD->ShowSelectionRect(SelectionStartPosition, SelectionSize);
+	}
+}
+
+void ATopDownPlayerController::SelectEnd(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Display, TEXT("Selection end"));
+	if (TopDownHUD)
+	{
+		TopDownHUD->HideSelectionRect();
 	}
 }

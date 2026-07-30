@@ -10,6 +10,7 @@ class ACLM_BasePawn;
 class UInputMappingContext;
 class UInputAction;
 class AActor;
+class ATopDownHUD;
 struct FInputActionValue;
 
 UCLASS()
@@ -23,6 +24,7 @@ public:
 	UInputMappingContext* DefaultInputMappingContext;
 	
 protected:
+	virtual void BeginPlay() override;
 	
 	virtual void SetupInputComponent() override;
 	
@@ -30,6 +32,11 @@ protected:
 
 	void CommandSelectedActor(const FInputActionValue& Value);
 	
+	// Actor Rect Selection
+	void SelectStart(const FInputActionValue& Value);
+	void SelectOnGoing(const FInputActionValue& Value);
+	void SelectEnd(const FInputActionValue& Value);
+	// ------------------------------------------------
 private:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta = (AllowPrivateAccess = "true"))
@@ -39,5 +46,14 @@ private:
 	TObjectPtr<UInputAction> CommandAction;
 	
 	UPROPERTY()
-	AActor* SelectedActor;
+	TObjectPtr<AActor> SelectedActor;
+	
+	UPROPERTY()
+	TObjectPtr<ATopDownHUD> TopDownHUD;
+	
+	// Actor Rect Selection
+	FVector2D SelectionStartPosition;
+	FVector2D SelectionSize;
+	// ------------------------------------------------
+	
 };
