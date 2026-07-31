@@ -36,6 +36,7 @@ protected:
 	void SelectStart(const FInputActionValue& Value);
 	void SelectOnGoing(const FInputActionValue& Value);
 	void SelectEnd(const FInputActionValue& Value);
+	void SelectMultipleActors();
 	// ------------------------------------------------
 private:
 	
@@ -54,6 +55,8 @@ private:
 	// Actor Rect Selection
 	FVector2D SelectionStartPosition;
 	FVector2D SelectionSize;
+	
+	TArray<AActor*> SelectedActors;
 	// ------------------------------------------------
 	
 };

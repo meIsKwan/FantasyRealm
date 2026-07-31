@@ -123,5 +123,39 @@ void ATopDownPlayerController::SelectEnd(const FInputActionValue& Value)
 	if (TopDownHUD)
 	{
 		TopDownHUD->HideSelectionRect();
+		FTimerHandle TimerHandleSelectionMultipleActors;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandleSelectionMultipleActors, this, &ATopDownPlayerController::SelectMultipleActors, 0.2f, false);
+	}
+}
+
+void ATopDownPlayerController::SelectMultipleActors()
+{
+	if (TopDownHUD)
+	{
+		// Deselect Actors
+		for (AActor* SomeActors : SelectedActors)
+		{
+			if (SomeActors)
+			{
+				if (SomeActors->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
+				{
+					ISelectableInterface::Execute_SelectActor(SomeActors, false);
+				}
+			}
+		}
+		
+		// Select Actors
+		TopDownHUD->HideSelectionRect();
+		SelectedActors = TopDownHUD->GetSelectedActors();
+		for (AActor* SomeActors : SelectedActors)
+		{
+			if (SomeActors)
+			{
+				if (SomeActors->GetClass()->ImplementsInterface(USelectableInterface::StaticClass()))
+				{
+					ISelectableInterface::Execute_SelectActor(SomeActors, true);
+				}
+			}
+		}
 	}
 }
